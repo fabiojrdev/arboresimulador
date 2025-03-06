@@ -49,7 +49,7 @@ const App = () => {
       utm_medium: utmMedium
     };
 
-    fetch('https://hook.us1.make.com/042oqm2cszci4bkq47dtxk6d596uqnmu', {
+    fetch('https://hook.us2.make.com/2o2vdrqsgycy1ylqwl4o5rvvylhgxtbm', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
