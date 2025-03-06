@@ -23,38 +23,38 @@ const App = () => {
   }, []);
 
   const handleNext = (data) => {
-    if (currentStep === 0) {
-      setDadosCadastro(data);
-      setCurrentStep(1);
-    } else if (currentStep === 1) {
-      setDataSimulacao(data);
-      enviarDadosParaWebhook({ ...dadosCadastro, ...data });
-      setCurrentStep(2);
-    }
-  };
+  if (currentStep === 0) {
+    setDadosCadastro(data);
+    setCurrentStep(1);
+  } else if (currentStep === 1) {
+    setDataSimulacao(data);
+    
+    // Enviar todos os dados apenas quando estiverem completos
+    const dadosCompletos = { ...dadosCadastro, ...data, ...utmParams };
+    enviarDadosParaWebhook(dadosCompletos);
+
+    setCurrentStep(2);
+  }
+};
+
 
   const handleBack = () => {
     setCurrentStep((prevStep) => Math.max(prevStep - 1, 0));
   };
 
-  const enviarDadosParaWebhook = (dadosCompletos) => {
-    const dadosCompletosComUtm = {
-      ...dadosCompletos,
-      ...utmParams, // Inclui UTM na requisição
-    };
-
-    fetch('https://hook.us2.make.com/2o2vdrqsgycy1ylqwl4o5rvvylhgxtbm', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dadosCompletosComUtm),
+  const enviarDadosParaWebhook = (dados) => {
+  fetch('https://hook.us2.make.com/2o2vdrqsgycy1ylqwl4o5rvvylhgxtbm', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dados),
+  })
+    .then(response => {
+      if (!response.ok) throw new Error('Erro ao enviar dados ao Webhook');
+      return response.text();
     })
-      .then((response) => {
-        if (!response.ok) throw new Error('Erro ao enviar dados ao Webhook');
-        return response.text();
-      })
-      .then((data) => console.log('Lead enviado com sucesso:', data))
-      .catch((error) => console.error('Erro ao enviar lead:', error));
-  };
+    .then(data => console.log('Lead enviado com sucesso:', data))
+    .catch(error => console.error('Erro ao enviar lead:', error));
+};
 
   const AppWithStepProgress = () => {
     const location = useLocation();
