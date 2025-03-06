@@ -1,0 +1,11 @@
+.card {
+  margin-top: 20px;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.valor {
+  font-weight: bold;
+}

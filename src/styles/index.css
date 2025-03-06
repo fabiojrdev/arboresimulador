@@ -1,0 +1,76 @@
+body {
+  font-family: Inter, sans-serif;
+  margin: 20px;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+}
+
+button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+}
+
+.calculo {
+  margin-top: 10px;
+}
+
+.btn-check:checked+.btn-bb {
+  background-color: #FCFA64 !important;
+  transition: 0.5s;
+}
+
+.btn-check:checked+.btn-itau {
+  background-color: #FF6200 !important;
+  transition: 0.5s;
+}
+
+.btn-check:checked+.btn-caixa {
+  background-color: #0070AF !important;
+  transition: 0.5s;
+}
+
+.btn-check:checked+.btn-santander {
+  background-color: #EA1D25 !important;
+  transition: 0.5s;
+}
+
+.btn-check:checked+.btn-nubank {
+  background-color: #820AD1 !important;
+  transition: 0.5s;
+}
+
+.banco-logo {
+  width: 90px;
+  height: auto;
+  cursor: pointer;
+}
+
+/* styles.css */
+h1 {
+  margin-bottom: 20px;
+}
+
+.form-check-label {
+  margin-left: 10px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.invalid-feedback {
+  font-size: 14px;
+}

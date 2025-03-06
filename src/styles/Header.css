@@ -1,0 +1,22 @@
+.header {
+  display: flex;
+  width: 100%;
+  padding: 20px;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1.5px solid #A6A6A6;
+}
+
+.logo-arbore {
+  height: 40px !important;
+}
+
+.btn-voltar {
+  margin: 0px !important;
+  color: #1f6732;
+  text-decoration: none;
+}
+
+.btn-voltar:hover {
+  color: #267E3E;
+}
