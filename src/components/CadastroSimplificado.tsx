@@ -41,12 +41,44 @@ const CadastroSimplificado = ({ onNext }) => {
     return Object.keys(errors).length === 0;
   };
 
-  const handleNext = () => {
-    if (validate()) {
+ const handleNext = async () => {
+  if (validate()) {
+    const leadData = {
+      event_type: "CONVERSION",
+      event_family: "CDP",
+      payload: {
+        conversion_identifier: "Cadastro Simples",
+        name: dadosPessoais.nome,
+        email: dadosPessoais.email,
+        personal_phone: dadosPessoais.telefone
+      }
+    };
+
+    try {
+      const response = await fetch("https://api.rd.services/platform/conversions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer YJtyyttZjhzuOdMOoTLnNVbRdJZhhyvmVEvY` // Substitua pelo seu token de acesso
+        },
+        body: JSON.stringify(leadData)
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao enviar lead para o RD Station.");
+      }
+
+      console.log("Lead enviado com sucesso para RD Station!");
+
       onNext(dadosPessoais);
-      navigate('/simulador');
+      navigate("/simulador");
+    } catch (error) {
+      console.error("Erro ao enviar lead:", error);
+      alert("Erro ao enviar seus dados. Tente novamente.");
     }
-  };
+  }
+};
+
 
   return (
     <div className="container">
