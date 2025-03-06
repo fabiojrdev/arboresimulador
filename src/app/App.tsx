@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 import Cadastro from '../components/cadastro.tsx';
-import CadastroSimplificado from '../components/CadastroSimplificado.tsx';
+import CadastroSimplificado from '../components/CadastroSimplificado.tsx'; // Importar o novo componente
 import Dashboard from '../components/Dashboard.tsx';
 import Header from '../components/Header.tsx';
 import Simulador from '../components/simulador.tsx';
@@ -11,63 +11,68 @@ const App = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [dadosCadastro, setDadosCadastro] = useState({});
   const [dataSimulacao, setDataSimulacao] = useState({});
-  const [utmParams, setUtmParams] = useState({});
+  const [utmSource, setUTMSource] = useState<string | null>(null);
+  const [utmCampaign, setUTMCampaign] = useState<string | null>(null);
+  const [utmMedium, setUTMMedium] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    setUtmParams({
-      utm_source: params.get('utm_source'),
-      utm_campaign: params.get('utm_campaign'),
-      utm_medium: params.get('utm_medium'),
-    });
+    setUTMSource(params.get('utm_source'));
+    setUTMCampaign(params.get('utm_campaign'));
+    setUTMMedium(params.get('utm_medium'));
   }, []);
 
   const handleNext = (data) => {
-  if (currentStep === 0) {
-    setDadosCadastro(data);
-    setCurrentStep(1);
-  } else if (currentStep === 1) {
-    setDataSimulacao(data);
-    
-    // Enviar todos os dados apenas quando estiverem completos
-    const dadosCompletos = { ...dadosCadastro, ...data, ...utmParams };
-    enviarDadosParaWebhook(dadosCompletos);
-
-    setCurrentStep(2);
-  }
-};
-
-
-  const handleBack = () => {
-    setCurrentStep((prevStep) => Math.max(prevStep - 1, 0));
+    if (currentStep === 0) {
+      setDadosCadastro(data);
+      setCurrentStep(1);
+    } else if (currentStep === 1) {
+      setDataSimulacao(data);
+      enviarDadosParaWebhook({ ...dadosCadastro, ...data });
+      setCurrentStep(2);
+    }
   };
 
-  const enviarDadosParaWebhook = (dados) => {
-  fetch('https://hook.us2.make.com/2o2vdrqsgycy1ylqwl4o5rvvylhgxtbm', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(dados),
-  })
-    .then(response => {
-      if (!response.ok) throw new Error('Erro ao enviar dados ao Webhook');
-      return response.text();
+  const handleBack = () => {
+    if (currentStep === 1) {
+      setCurrentStep(0);
+    } else if (currentStep === 2) {
+      setCurrentStep(1);
+    }
+  };
+
+  const enviarDadosParaWebhook = (dadosCompletos) => {
+    const dadosCompletosComUtm = {
+      ...dadosCompletos,
+      utm_source: utmSource,
+      utm_campaign: utmCampaign,
+      utm_medium: utmMedium
+    };
+
+    fetch('https://hook.us2.make.com/2o2vdrqsgycy1ylqwl4o5rvvylhgxtbm', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dadosCompletosComUtm)
     })
-    .then(data => console.log('Lead enviado com sucesso:', data))
-    .catch(error => console.error('Erro ao enviar lead:', error));
-};
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erro na resposta do webhook');
+        }
+        return response.text(); // Não espera um JSON válido
+      })
+      .then(data => {
+        console.log('Sucesso:', data);
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+      });
+  };
 
   const AppWithStepProgress = () => {
     const location = useLocation();
     const isSimplificado = location.pathname === '/simplificado';
-
-    useEffect(() => {
-      const params = new URLSearchParams(location.search);
-      setUtmParams({
-        utm_source: params.get('utm_source'),
-        utm_campaign: params.get('utm_campaign'),
-        utm_medium: params.get('utm_medium'),
-      });
-    }, [location]);
 
     return (
       <>
@@ -78,7 +83,7 @@ const App = () => {
             path="/"
             element={
               <Cadastro
-                onNext={handleNext}
+                onNext={(data) => handleNext(data)}
                 onBack={handleBack}
                 currentStep={currentStep}
               />
@@ -88,10 +93,9 @@ const App = () => {
             path="/simplificado"
             element={
               <CadastroSimplificado
-                onNext={(data) => {
-                  enviarDadosParaWebhook(data); // Enviar direto no simplificado
-                  handleNext(data);
-                }}
+                onNext={(data) => handleNext(data)}
+                onBack={handleBack}
+                currentStep={currentStep}
               />
             }
           />
