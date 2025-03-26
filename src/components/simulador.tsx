@@ -63,7 +63,7 @@ const Simulador = ({ onNext, onBack, currentStep, dadosCadastro }) => {
     const entradaNum = parseFloat(entrada.replace(/\D/g, '')) / 100;
     const valorFgtsNum = fgts ? parseFloat(valorFgts.replace(/\D/g, '')) / 100 : 0;
 
-    const taxaJurosAnual = 7.00 / 100;
+    const taxaJurosAnual = 8.16 / 100;
     const taxaJurosMensal = Math.pow(1 + taxaJurosAnual, 1 / 12) - 1;
     const valorFinanciado = valorImovelNum - entradaNum - valorFgtsNum;
 
